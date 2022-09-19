@@ -72,7 +72,7 @@
 
     {% include 'publications/nav.html' %}
 
-    <div class="row" >
+    <div class="row">
 
         <div class="col-2">
 
@@ -80,28 +80,23 @@
                 <a class="active" href="">Year</a>
                 {% for year in years_r %}
 
-                {% if year_sidebar == year %}
-
-                  <a style="background-color: #565; color: white;" href="{% url 'year_wise_publications' year=year %}">{{year}}</a>
-
-                {% else %}
-
-                  <a href="{% url 'year_wise_publications' year=year %}">{{year}}</a>
-
-                {% endif %}
+                <a href="{% url 'year_wise_publications' year=year %}">{{year}}</a>
 
                 {% endfor %}
                 <a> </a>
                
 
             </div>
-
+            
         </div>
+                
+        
+
+
 
         <div class="col-10">
-        
            
-            <table class="table table-hover table-responsive">
+            <table class="table table-hover">
                 <thead>
                   <tr>
                     <th scope="col">Authors</th>
@@ -124,7 +119,6 @@
         
                 </tbody>
               </table>
-             
 
            <!-- div> {% if pubs.has_other_pages %}
 
@@ -147,7 +141,12 @@
                 </div>
             {% endif %}
               </div -->
-            <p>Showing {{showing_items}} out of {{total_pubs}} Publications</P>
+              {% if showing_results == 0 %}
+              <p>Found {{showing_results}} Publication</p>
+              {% else %}
+              <p>Found {{showing_results}} Publication{{ showing_results|pluralize }} </p>
+              {% endif %}
+
 
             {% if pubs.has_other_pages %}
 
@@ -181,9 +180,35 @@
               {% endif %}
            
         </div>
-        
 
     </div>
+
+    <!--script type="text/javascript">
+
+        let searchForm = document.getElementById("searchForm");
+        let pageLinks = document.getElementsByClassName("page-link");
+
+        //ENSURE SEARCH FORM EXISTS
+        if (searchForm) {
+        for (let i = 0; pageLinks.length > i; i++) {
+            pageLinks[i].addEventListener("click", function (e) {
+            e.preventDefault();
+
+            //GET THE DATA ATTRIBUTE
+            let page = this.dataset.page;
+
+            //ADD HIDDEN SEARCH INPUT TO FORM
+            searchForm.innerHTML += `<input value=${page} name="page" hidden/>`;
+
+            //SUBMIT FORM
+            searchForm.submit();
+            });
+        }
+        }
+
+
+      
+    </-script -->
 
     
 

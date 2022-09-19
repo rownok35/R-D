@@ -30,15 +30,45 @@ def year_wise_publications(request, year):
     years_r = years.copy()
     years_r.sort(reverse=True)
 
-    pubs = Publication.objects.filter(publishing_year = year)
+    pubs = Publication.objects.filter(publishing_year = year).order_by('-cited_by')
 
-    #Pagination
-    showing_product = 7
+    
+
+     #Pagination
+    showing_product = 50
     paginator = Paginator(pubs, showing_product)
     page = request.GET.get('page')
-    page_product = paginator.get_page(page)
 
-    context = { 'message': 'Hello, World! :)', 'years': years,'years_r':years_r, "types": types, "pubs": page_product}
+    try:
+        page_product = paginator.page(page)
+    except PageNotAnInteger:
+        page = 1
+        page_product = paginator.page(page)
+    except EmptyPage:
+        page = paginator.num_pages
+        page_product = paginator.page(page)
+    
+    leftIndex = (int(page) - 4)
+
+    if leftIndex < 1:
+        leftIndex = 1
+
+    rightIndex = (int(page) + 10)
+
+    if rightIndex > paginator.num_pages:
+        rightIndex = paginator.num_pages + 1
+
+    custom_range = range(leftIndex, rightIndex)
+
+
+    # page_product = paginator.get_page(page)
+
+    year = int(year)
+
+    total_pubs = len(pubs)
+    showing_items = len(page_product)
+
+    context = { 'message': 'Hello, World! :)', 'years': years,'years_r':years_r, "types": types, "pubs": page_product, 'custom_range': custom_range, 'year_sidebar': year, "total_pubs": total_pubs, "showing_items": showing_items}
     return render(request, 'publications/year.html', context)
 
 
@@ -65,15 +95,40 @@ def category(request, document_type):
     years_r = years.copy()
     years_r.sort(reverse=True)
 
-    pubs = Publication.objects.filter(document_type = document_type)
+    pubs = Publication.objects.filter(document_type = document_type).order_by('-publishing_year','-cited_by')
 
     #Pagination
-    showing_product = 7
+    showing_product = 50
     paginator = Paginator(pubs, showing_product)
     page = request.GET.get('page')
-    page_product = paginator.get_page(page)
 
-    context = { 'message': 'Hello, World! :)', 'years': years,'years_r':years_r, "types": types, "pubs": page_product}
+    try:
+        page_product = paginator.page(page)
+    except PageNotAnInteger:
+        page = 1
+        page_product = paginator.page(page)
+    except EmptyPage:
+        page = paginator.num_pages
+        page_product = paginator.page(page)
+    
+    leftIndex = (int(page) - 4)
+
+    if leftIndex < 1:
+        leftIndex = 1
+
+    rightIndex = (int(page) + 10)
+
+    if rightIndex > paginator.num_pages:
+        rightIndex = paginator.num_pages + 1
+
+    custom_range = range(leftIndex, rightIndex)
+
+
+    # page_product = paginator.get_page(page)
+    total_pubs = len(pubs)
+    showing_items = len(page_product)
+
+    context = { 'message': 'Hello, World! :)', 'years': years,'years_r':years_r, "types": types, "pubs": page_product, 'custom_range': custom_range, "total_pubs": total_pubs, "showing_items": showing_items}
     return render(request, 'publications/year.html', context)
 
 
@@ -90,13 +145,50 @@ def search(request):
     years_r = years.copy()
     years_r.sort(reverse=True)
 
-    pubs = Publication.objects.filter(Q(document_type__icontains = search_query)| Q(authors__icontains = search_query) | Q(title__icontains = search_query) | Q(publishing_year__icontains = search_query))
+    if search_query == '':
+        pubs = []
+    elif search_query == ',':
+        pubs = []
+    else:
+        pubs = Publication.objects.filter(Q(document_type__icontains = search_query)| Q(authors__icontains = search_query) | Q(title__icontains = search_query) | Q(publishing_year__icontains = search_query))
+    
+    showing_results = len(pubs)
 
     #Pagination
-    showing_product = 7
-    paginator = Paginator(pubs, showing_product)
-    page = request.GET.get('page')
-    page_product = paginator.get_page(page)
+    # showing_product = 7
+    # paginator = Paginator(pubs, showing_product)
+    # page = request.GET.get('page')
 
-    context = { 'message': 'Hello, World! :)', 'years': years,'years_r':years_r, "types": types, "pubs": page_product}
-    return render(request, 'publications/year.html', context)
+    # try:
+    #     page_product = paginator.page(page)
+    # except PageNotAnInteger:
+    #     page = 1
+    #     page_product = paginator.page(page)
+    # except EmptyPage:
+    #     page = paginator.num_pages
+    #     page_product = paginator.page(page)
+    
+    # leftIndex = (int(page) - 4)
+
+    # if leftIndex < 1:
+    #     leftIndex = 1
+
+    # rightIndex = (int(page) + 5)
+
+    # if rightIndex > paginator.num_pages:
+    #     rightIndex = paginator.num_pages + 1
+
+    # custom_range = range(leftIndex, rightIndex)
+
+
+    # page_product = paginator.get_page(page)
+
+    context = {
+                'years': years,'years_r':years_r, 
+                "types": types, 
+                "pubs": pubs,
+                "showing_results": showing_results,
+                # 'custom_range': custom_range,
+
+                }
+    return render(request, 'publications/search.html', context)

@@ -24,6 +24,7 @@
         color: black;
         padding: 16px;
         text-decoration: none;
+        text-align: center;
       }
       
       /* Active/current link */
@@ -127,12 +128,16 @@
                     </tr>
                     {% endif %}
 
+                    <!--div>
+
                     {% if pub.affiliation %}
                     <tr>
                         <th>Affiliation</th>
-                        <td>{{pub.affiliation}}</td> 
+                        <td>{{pub.affiliation|linebreaks}}</td> 
                     </tr>
                     {% endif %}
+                    </div-->
+
 
                     {% if pub.publisher %}
                     <tr>
@@ -156,13 +161,14 @@
                     {% endif %}
 
                     
-                    
+                    <!--div>
                     {% if pub.cited_by %}
                     <tr>
                         <th>Citation</th>
                         <td>{{pub.cited_by}}</td> 
                     </tr>
                     {% endif %}
+                    </div-->
 
                     
 
